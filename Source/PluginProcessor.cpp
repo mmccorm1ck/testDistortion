@@ -104,6 +104,49 @@ void TestDistortionAudioProcessor::prepareToPlay (double sampleRate, int samples
 
     leftChain.prepare(spec);
     rightChain.prepare(spec);
+
+    auto chainSettings = getChainSettings(apvts);
+
+    auto lowCutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowFreq, sampleRate, 1);
+    auto& leftLowCut = leftChain.get<ChainPossitions::LowCut>();
+    auto& rightLowCut = rightChain.get<ChainPossitions::LowCut>();
+    *leftLowCut.get<0>().coefficients = *lowCutCoefficients[0];
+    *rightLowCut.get<0>().coefficients = *lowCutCoefficients[0];
+
+    auto highCutCoefficients = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(chainSettings.highFreq, sampleRate, 1);
+    auto& leftHighCut = leftChain.get<ChainPossitions::HighCut>();
+    auto& rightHighCut = rightChain.get<ChainPossitions::HighCut>();
+    *leftHighCut.get<0>().coefficients = *highCutCoefficients[0];
+    *rightHighCut.get<0>().coefficients = *highCutCoefficients[0];
+
+    switch (chainSettings.distType)
+    {
+    case Soft:
+    {
+
+        break;
+    }
+    case Hard:
+    {
+
+        break;
+    }
+    case Tube:
+    {
+
+        break;
+    }
+    case Tape:
+    {
+
+        break;
+    }
+    case Rail:
+    {
+
+        break;
+    }
+    }
 }
 
 void TestDistortionAudioProcessor::releaseResources()
@@ -153,6 +196,20 @@ void TestDistortionAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
 
+    auto chainSettings = getChainSettings(apvts);
+
+    auto lowCutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowFreq, getSampleRate(), 1);
+    auto& leftLowCut = leftChain.get<ChainPossitions::LowCut>();
+    auto& rightLowCut = rightChain.get<ChainPossitions::LowCut>();
+    *leftLowCut.get<0>().coefficients = *lowCutCoefficients[0];
+    *rightLowCut.get<0>().coefficients = *lowCutCoefficients[0];
+
+    auto highCutCoefficients = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(chainSettings.highFreq, getSampleRate(), 1);
+    auto& leftHighCut = leftChain.get<ChainPossitions::HighCut>();
+    auto& rightHighCut = rightChain.get<ChainPossitions::HighCut>();
+    *leftHighCut.get<0>().coefficients = *highCutCoefficients[0];
+    *rightHighCut.get<0>().coefficients = *highCutCoefficients[0];
+
     juce::dsp::AudioBlock<float> block(buffer);
 
     auto leftBlock = block.getSingleChannelBlock(0);
@@ -191,13 +248,26 @@ void TestDistortionAudioProcessor::setStateInformation (const void* data, int si
     // whose contents will have been created by the getStateInformation() call.
 }
 
+ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
+{
+    ChainSettings settings;
+
+    settings.lowFreq = apvts.getRawParameterValue("LowCut Freq")->load();
+    settings.highFreq = apvts.getRawParameterValue("HighCut Freq")->load();
+    settings.inGain = apvts.getRawParameterValue("Input Gain")->load();
+    settings.outGain = apvts.getRawParameterValue("Output Gain")->load();
+    settings.distType = static_cast<DistTypes>(apvts.getRawParameterValue("Distortion Type")->load());
+
+    return settings;
+}
+
 juce::AudioProcessorValueTreeState::ParameterLayout TestDistortionAudioProcessor::createParameterLayout()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>("LowCut Freq", "LowCut Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 20.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("LowCut Freq", "LowCut Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f), 20.f));
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>("HighCut Freq", "HighCut Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 1.f), 20000.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("HighCut Freq", "HighCut Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f), 20000.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("Input Gain", "Input Gain", juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.0f));
 

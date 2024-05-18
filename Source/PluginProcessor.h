@@ -10,6 +10,26 @@
 
 #include <JuceHeader.h>
 
+enum DistTypes
+{
+    Soft,
+    Hard,
+    Tube,
+    Tape,
+    Rail
+};
+
+struct ChainSettings
+{
+    float lowFreq{ 0 };
+    float highFreq{ 0 };
+    float inGain{ 0 };
+    float outGain{ 0 };
+    DistTypes distType { DistTypes::Soft };
+};
+
+ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
+
 //==============================================================================
 /**
 */
@@ -61,11 +81,19 @@ private:
 //    using Waveshaper = juce::dsp::WaveShaper<float>;
 //    using Gain = juce::dsp::Gain<float>;
 
-    using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
-
+    using CutFilter = juce::dsp::ProcessorChain<Filter>;
     using MonoChain = juce::dsp::ProcessorChain<CutFilter, CutFilter>;
 
     MonoChain leftChain, rightChain;
+
+    enum ChainPossitions
+    {
+        LowCut,
+//        GainIn,
+//        WaveShape,
+//        GainOut,
+        HighCut
+    };
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TestDistortionAudioProcessor)
