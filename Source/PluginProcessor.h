@@ -57,6 +57,16 @@ public:
     juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout()};
 
 private:
+    using Filter = juce::dsp::IIR::Filter<float>;
+//    using Waveshaper = juce::dsp::WaveShaper<float>;
+//    using Gain = juce::dsp::Gain<float>;
+
+    using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
+
+    using MonoChain = juce::dsp::ProcessorChain<CutFilter, CutFilter>;
+
+    MonoChain leftChain, rightChain;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TestDistortionAudioProcessor)
 };
