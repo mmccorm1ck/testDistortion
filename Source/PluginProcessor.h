@@ -79,19 +79,19 @@ public:
 private:
     using Filter = juce::dsp::IIR::Filter<float>;
 //    using Waveshaper = juce::dsp::WaveShaper<float>;
-//    using Gain = juce::dsp::Gain<float>;
+    using Gain = juce::dsp::Gain<float>;
 
     using CutFilter = juce::dsp::ProcessorChain<Filter>;
-    using MonoChain = juce::dsp::ProcessorChain<CutFilter, CutFilter>;
+    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Gain, Gain, CutFilter>;
 
     MonoChain leftChain, rightChain;
 
-    enum ChainPossitions
+    enum ChainPositions
     {
         LowCut,
-//        GainIn,
+        GainIn,
 //        WaveShape,
-//        GainOut,
+        GainOut,
         HighCut
     };
 

@@ -108,16 +108,21 @@ void TestDistortionAudioProcessor::prepareToPlay (double sampleRate, int samples
     auto chainSettings = getChainSettings(apvts);
 
     auto lowCutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowFreq, sampleRate, 1);
-    auto& leftLowCut = leftChain.get<ChainPossitions::LowCut>();
-    auto& rightLowCut = rightChain.get<ChainPossitions::LowCut>();
+    auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
+    auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
     *leftLowCut.get<0>().coefficients = *lowCutCoefficients[0];
     *rightLowCut.get<0>().coefficients = *lowCutCoefficients[0];
 
     auto highCutCoefficients = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(chainSettings.highFreq, sampleRate, 1);
-    auto& leftHighCut = leftChain.get<ChainPossitions::HighCut>();
-    auto& rightHighCut = rightChain.get<ChainPossitions::HighCut>();
+    auto& leftHighCut = leftChain.get<ChainPositions::HighCut>();
+    auto& rightHighCut = rightChain.get<ChainPositions::HighCut>();
     *leftHighCut.get<0>().coefficients = *highCutCoefficients[0];
     *rightHighCut.get<0>().coefficients = *highCutCoefficients[0];
+
+    leftChain.get<ChainPositions::GainIn>().setGainDecibels(chainSettings.inGain);
+    rightChain.get<ChainPositions::GainIn>().setGainDecibels(chainSettings.inGain);
+    leftChain.get<ChainPositions::GainOut>().setGainDecibels(chainSettings.outGain);
+    rightChain.get<ChainPositions::GainOut>().setGainDecibels(chainSettings.outGain);
 
     switch (chainSettings.distType)
     {
@@ -199,16 +204,21 @@ void TestDistortionAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer
     auto chainSettings = getChainSettings(apvts);
 
     auto lowCutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowFreq, getSampleRate(), 1);
-    auto& leftLowCut = leftChain.get<ChainPossitions::LowCut>();
-    auto& rightLowCut = rightChain.get<ChainPossitions::LowCut>();
+    auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
+    auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
     *leftLowCut.get<0>().coefficients = *lowCutCoefficients[0];
     *rightLowCut.get<0>().coefficients = *lowCutCoefficients[0];
 
     auto highCutCoefficients = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(chainSettings.highFreq, getSampleRate(), 1);
-    auto& leftHighCut = leftChain.get<ChainPossitions::HighCut>();
-    auto& rightHighCut = rightChain.get<ChainPossitions::HighCut>();
+    auto& leftHighCut = leftChain.get<ChainPositions::HighCut>();
+    auto& rightHighCut = rightChain.get<ChainPositions::HighCut>();
     *leftHighCut.get<0>().coefficients = *highCutCoefficients[0];
     *rightHighCut.get<0>().coefficients = *highCutCoefficients[0];
+
+    leftChain.get<ChainPositions::GainIn>().setGainDecibels(chainSettings.inGain);
+    rightChain.get<ChainPositions::GainIn>().setGainDecibels(chainSettings.inGain);
+    leftChain.get<ChainPositions::GainOut>().setGainDecibels(chainSettings.outGain);
+    rightChain.get<ChainPositions::GainOut>().setGainDecibels(chainSettings.outGain);
 
     juce::dsp::AudioBlock<float> block(buffer);
 
