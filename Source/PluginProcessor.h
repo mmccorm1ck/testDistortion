@@ -78,11 +78,11 @@ public:
 
 private:
     using Filter = juce::dsp::IIR::Filter<float>;
-//    using Waveshaper = juce::dsp::WaveShaper<float>;
+    using Waveshaper = juce::dsp::WaveShaper<float>;
     using Gain = juce::dsp::Gain<float>;
 
     using CutFilter = juce::dsp::ProcessorChain<Filter>;
-    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Gain, Gain, CutFilter>;
+    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Gain, Waveshaper, Gain, CutFilter>;
 
     MonoChain leftChain, rightChain;
 
@@ -90,7 +90,7 @@ private:
     {
         LowCut,
         GainIn,
-//        WaveShape,
+        WaveShape,
         GainOut,
         HighCut
     };

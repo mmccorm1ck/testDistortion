@@ -152,6 +152,15 @@ void TestDistortionAudioProcessor::prepareToPlay (double sampleRate, int samples
         break;
     }
     }
+
+    auto& waveshapeLeft = leftChain.get<ChainPositions::WaveShape>();
+    auto& waveshapeRight = rightChain.get<ChainPositions::WaveShape>();
+    waveshapeLeft.functionToUse = [](float x) {
+        return juce::jlimit(float(-0.1), float(0.1), x);
+        };
+    waveshapeRight.functionToUse = [](float x) {
+        return juce::jlimit(float(-0.1), float(0.1), x);
+        };
 }
 
 void TestDistortionAudioProcessor::releaseResources()
@@ -219,6 +228,15 @@ void TestDistortionAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer
     rightChain.get<ChainPositions::GainIn>().setGainDecibels(chainSettings.inGain);
     leftChain.get<ChainPositions::GainOut>().setGainDecibels(chainSettings.outGain);
     rightChain.get<ChainPositions::GainOut>().setGainDecibels(chainSettings.outGain);
+
+    auto& waveshapeLeft = leftChain.get<ChainPositions::WaveShape>();
+    auto& waveshapeRight = rightChain.get<ChainPositions::WaveShape>();
+    waveshapeLeft.functionToUse = [](float x) {
+        return juce::jlimit(float(-0.1), float(0.1), x);
+        };
+    waveshapeRight.functionToUse = [](float x) {
+        return juce::jlimit(float(-0.1), float(0.1), x);
+        };
 
     juce::dsp::AudioBlock<float> block(buffer);
 
