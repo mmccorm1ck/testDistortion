@@ -156,10 +156,10 @@ void TestDistortionAudioProcessor::prepareToPlay (double sampleRate, int samples
     auto& waveshapeLeft = leftChain.get<ChainPositions::WaveShape>();
     auto& waveshapeRight = rightChain.get<ChainPositions::WaveShape>();
     waveshapeLeft.functionToUse = [](float x) {
-        return juce::jlimit(float(-0.1), float(0.1), x);
+        return std::tanh(x);
         };
     waveshapeRight.functionToUse = [](float x) {
-        return juce::jlimit(float(-0.1), float(0.1), x);
+        return std::tanh(x);
         };
 }
 
@@ -232,10 +232,10 @@ void TestDistortionAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer
     auto& waveshapeLeft = leftChain.get<ChainPositions::WaveShape>();
     auto& waveshapeRight = rightChain.get<ChainPositions::WaveShape>();
     waveshapeLeft.functionToUse = [](float x) {
-        return juce::jlimit(float(-0.1), float(0.1), x);
+        return std::tanh(x);
         };
     waveshapeRight.functionToUse = [](float x) {
-        return juce::jlimit(float(-0.1), float(0.1), x);
+        return std::tanh(x);
         };
 
     juce::dsp::AudioBlock<float> block(buffer);
@@ -297,9 +297,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout TestDistortionAudioProcessor
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("HighCut Freq", "HighCut Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f), 20000.f));
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>("Input Gain", "Input Gain", juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("Input Gain", "Input Gain", juce::NormalisableRange<float>(0.0f, 50.0f, 0.5f, 1.f), 25.0f));
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>("Output Gain", "Output Gain", juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("Output Gain", "Output Gain", juce::NormalisableRange<float>(-50.0f, 0.0f, 0.5f, 1.f), -25.0f));
 
     juce::StringArray stringArray;
     stringArray.add("Diode - Soft");
