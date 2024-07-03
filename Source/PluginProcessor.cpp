@@ -8,6 +8,8 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include <numbers>
+#include <cmath>
 
 //==============================================================================
 TestDistortionAudioProcessor::TestDistortionAudioProcessor()
@@ -124,43 +126,35 @@ void TestDistortionAudioProcessor::prepareToPlay (double sampleRate, int samples
     leftChain.get<ChainPositions::GainOut>().setGainDecibels(chainSettings.outGain);
     rightChain.get<ChainPositions::GainOut>().setGainDecibels(chainSettings.outGain);
 
+    auto& waveshapeLeft = leftChain.get<ChainPositions::WaveShape>();
+    auto& waveshapeRight = rightChain.get<ChainPositions::WaveShape>();
+
     switch (chainSettings.distType)
     {
     case Soft:
     {
-
-        break;
+        waveshapeLeft.functionToUse = [](float x) {
+            return (2 / std::numbers::pi_v<float>) * atan(x * std::numbers::pi_v<float> / 2);
+            };
+        waveshapeRight.functionToUse = [](float x) {
+            return (2 / std::numbers::pi_v<float>) * atan(x * std::numbers::pi_v<float> / 2);
+            };
     }
     case Hard:
     {
-
-        break;
+        waveshapeLeft.functionToUse = [](float x) {
+            return std::tanh(x);
+            };
+        waveshapeRight.functionToUse = [](float x) {
+            return std::tanh(x);
+            };
     }
-    case Tube:
-    {
-
-        break;
-    }
-    case Tape:
-    {
-
-        break;
-    }
-    case Rail:
+    case Saturation:
     {
 
         break;
     }
     }
-
-    auto& waveshapeLeft = leftChain.get<ChainPositions::WaveShape>();
-    auto& waveshapeRight = rightChain.get<ChainPositions::WaveShape>();
-    waveshapeLeft.functionToUse = [](float x) {
-        return std::tanh(x);
-        };
-    waveshapeRight.functionToUse = [](float x) {
-        return std::tanh(x);
-        };
 }
 
 void TestDistortionAudioProcessor::releaseResources()
@@ -302,11 +296,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout TestDistortionAudioProcessor
     layout.add(std::make_unique<juce::AudioParameterFloat>("Output Gain", "Output Gain", juce::NormalisableRange<float>(-50.0f, 0.0f, 0.5f, 1.f), -25.0f));
 
     juce::StringArray stringArray;
-    stringArray.add("Diode - Soft");
-    stringArray.add("Diode - Hard");
-    stringArray.add("Tube");
-    stringArray.add("Tape");
-    stringArray.add("Rail");
+    stringArray.add("Soft");
+    stringArray.add("Hard");
+    stringArray.add("Saturation");
 
     layout.add(std::make_unique<juce::AudioParameterChoice>("Distortion Type", "Distortion Type", stringArray, 0));
 

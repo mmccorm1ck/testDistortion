@@ -14,9 +14,7 @@ enum DistTypes
 {
     Soft,
     Hard,
-    Tube,
-    Tape,
-    Rail
+    Saturation
 };
 
 struct ChainSettings
