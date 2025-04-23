@@ -131,7 +131,7 @@ void TestDistortionAudioProcessor::prepareToPlay (double sampleRate, int samples
 
     switch (chainSettings.distType)
     {
-    case Soft:
+    case ArcTan:
     {
         waveshapeLeft.functionToUse = [](float x) {
             return (2 / std::numbers::pi_v<float>) * atan(x * std::numbers::pi_v<float> / 2);
@@ -139,8 +139,9 @@ void TestDistortionAudioProcessor::prepareToPlay (double sampleRate, int samples
         waveshapeRight.functionToUse = [](float x) {
             return (2 / std::numbers::pi_v<float>) * atan(x * std::numbers::pi_v<float> / 2);
             };
+        break;
     }
-    case Hard:
+    case TanHyp:
     {
         waveshapeLeft.functionToUse = [](float x) {
             return std::tanh(x);
@@ -148,10 +149,6 @@ void TestDistortionAudioProcessor::prepareToPlay (double sampleRate, int samples
         waveshapeRight.functionToUse = [](float x) {
             return std::tanh(x);
             };
-    }
-    case Saturation:
-    {
-
         break;
     }
     }

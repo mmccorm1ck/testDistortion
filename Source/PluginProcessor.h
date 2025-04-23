@@ -12,9 +12,8 @@
 
 enum DistTypes
 {
-    Soft,
-    Hard,
-    Saturation
+    ArcTan,
+    TanHyp
 };
 
 struct ChainSettings
@@ -23,7 +22,7 @@ struct ChainSettings
     float highFreq{ 0 };
     float inGain{ 0 };
     float outGain{ 0 };
-    DistTypes distType { DistTypes::Soft };
+    DistTypes distType { DistTypes::ArcTan };
 };
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
