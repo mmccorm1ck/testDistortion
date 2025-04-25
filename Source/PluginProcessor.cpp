@@ -151,6 +151,20 @@ void TestDistortionAudioProcessor::prepareToPlay (double sampleRate, int samples
             };
         break;
     }
+    case Cubic:
+    {
+        waveshapeLeft.functionToUse = [](float x) {
+            if (x >= 1) return (2.0 / 3);
+            if (x <= -1) return (-2.0 / 3);
+            return (x - ((x ^ 3) / 3));
+            };
+        waveshapeRight.functionToUse = [](float x) {
+            if (x >= 1) return (2.0 / 3);
+            if (x <= -1) return (-2.0 / 3);
+            return (x - ((x ^ 3) / 3));
+            };
+        break;
+    }
     }
 }
 
