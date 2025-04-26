@@ -141,7 +141,7 @@ void TestDistortionAudioProcessor::prepareToPlay (double sampleRate, int samples
             };
         break;
     }
-    case TanHyp:
+    case HypTan:
     {
         waveshapeLeft.functionToUse = [](float x) {
             return std::tanh(x);
@@ -154,14 +154,70 @@ void TestDistortionAudioProcessor::prepareToPlay (double sampleRate, int samples
     case Cubic:
     {
         waveshapeLeft.functionToUse = [](float x) {
-            if (x >= 1) return (2.0 / 3);
-            if (x <= -1) return (-2.0 / 3);
-            return (x - ((x ^ 3) / 3));
+            float temp;
+            if (x >= 1) temp = 2.0 / 3;
+            else if (x <= -1) temp = -2.0 / 3;
+            else temp = x - (std::pow(x, 3) / 3);
+            return temp;
             };
         waveshapeRight.functionToUse = [](float x) {
-            if (x >= 1) return (2.0 / 3);
-            if (x <= -1) return (-2.0 / 3);
-            return (x - ((x ^ 3) / 3));
+            float temp;
+            if (x >= 1) temp = 2.0 / 3;
+            else if (x <= -1) temp = -2.0 / 3;
+            else temp = x - (std::pow(x, 3) / 3);
+            return temp;
+            };
+        break;
+    }
+    case Pow5:
+    {
+        waveshapeLeft.functionToUse = [](float x) {
+            float temp;
+            if (x >= 1) temp = 11.0 / 15;
+            else if (x <= -1) temp = -11.0 / 15;
+            else temp = x - (std::pow(x, 3) / 6) - (std::pow(x, 5) / 10);
+            return temp;
+            };
+        waveshapeRight.functionToUse = [](float x) {
+            float temp;
+            if (x >= 1) temp = 11.0 / 15;
+            else if (x <= -1) temp = -11.0 / 15;
+            else temp = x - (std::pow(x, 3) / 6) - (std::pow(x, 5) / 10);
+            return temp;
+            };
+        break;
+    }
+    case Pow7:
+    {
+        waveshapeLeft.functionToUse = [](float x) {
+            float temp;
+            if (x >= 1) temp = 19.0 / 24;
+            else if (x <= -1) temp = -19.0 / 24;
+            else temp = x - (std::pow(x, 3) / 12) - (std::pow(x, 5) / 16) - (std::pow(x, 7) / 16);
+            return temp;
+            };
+        waveshapeRight.functionToUse = [](float x) {
+            float temp;
+            if (x >= 1) temp = 19.0 / 24;
+            else if (x <= -1) temp = -19.0 / 24;
+            else temp = x - (std::pow(x, 3) / 12) - (std::pow(x, 5) / 16) - (std::pow(x, 7) / 16);
+            return temp;
+            };
+        break;
+    }
+    case Hard:
+    {
+        waveshapeLeft.functionToUse = [](float x) {
+            float temp = x;
+            if (temp >= 1) temp = 1.0;
+            else if (temp <= -1) temp = -1.0;
+            return (temp);
+            };
+        waveshapeRight.functionToUse = [](float x) {
+            float temp = x;
+            if (temp >= 1) temp = 1.0;
+            else if (temp <= -1) temp = -1.0;
+            return (temp);
             };
         break;
     }
@@ -236,12 +292,100 @@ void TestDistortionAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer
 
     auto& waveshapeLeft = leftChain.get<ChainPositions::WaveShape>();
     auto& waveshapeRight = rightChain.get<ChainPositions::WaveShape>();
-    waveshapeLeft.functionToUse = [](float x) {
-        return std::tanh(x);
-        };
-    waveshapeRight.functionToUse = [](float x) {
-        return std::tanh(x);
-        };
+
+    switch (chainSettings.distType)
+    {
+    case ArcTan:
+    {
+        waveshapeLeft.functionToUse = [](float x) {
+            return (2 / std::numbers::pi_v<float>) * atan(x * std::numbers::pi_v<float> / 2);
+            };
+        waveshapeRight.functionToUse = [](float x) {
+            return (2 / std::numbers::pi_v<float>) * atan(x * std::numbers::pi_v<float> / 2);
+            };
+        break;
+    }
+    case HypTan:
+    {
+        waveshapeLeft.functionToUse = [](float x) {
+            return std::tanh(x);
+            };
+        waveshapeRight.functionToUse = [](float x) {
+            return std::tanh(x);
+            };
+        break;
+    }
+    case Cubic:
+    {
+        waveshapeLeft.functionToUse = [](float x) {
+            float temp;
+            if (x >= 1) temp = 2.0 / 3;
+            else if (x <= -1) temp = -2.0 / 3;
+            else temp = x - (std::pow(x, 3) / 3);
+            return temp;
+            };
+        waveshapeRight.functionToUse = [](float x) {
+            float temp;
+            if (x >= 1) temp = 2.0 / 3;
+            else if (x <= -1) temp = -2.0 / 3;
+            else temp = x - (std::pow(x, 3) / 3);
+            return temp;
+            };
+        break;
+    }
+    case Pow5:
+    {
+        waveshapeLeft.functionToUse = [](float x) {
+            float temp;
+            if (x >= 1) temp = 11.0 / 15;
+            else if (x <= -1) temp = -11.0 / 15;
+            else temp = x - (std::pow(x, 3) / 6) - (std::pow(x, 5) / 10);
+            return temp;
+            };
+        waveshapeRight.functionToUse = [](float x) {
+            float temp;
+            if (x >= 1) temp = 11.0 / 15;
+            else if (x <= -1) temp = -11.0 / 15;
+            else temp = x - (std::pow(x, 3) / 6) - (std::pow(x, 5) / 10);
+            return temp;
+            };
+        break;
+    }
+    case Pow7:
+    {
+        waveshapeLeft.functionToUse = [](float x) {
+            float temp;
+            if (x >= 1) temp = 19.0 / 24;
+            else if (x <= -1) temp = -19.0 / 24;
+            else temp = x - (std::pow(x, 3) / 12) - (std::pow(x, 5) / 16) - (std::pow(x, 7) / 16);
+            return temp;
+            };
+        waveshapeRight.functionToUse = [](float x) {
+            float temp;
+            if (x >= 1) temp = 19.0 / 24;
+            else if (x <= -1) temp = -19.0 / 24;
+            else temp = x - (std::pow(x, 3) / 12) - (std::pow(x, 5) / 16) - (std::pow(x, 7) / 16);
+            return temp;
+            };
+        break;
+    }
+    case Hard:
+    {
+        waveshapeLeft.functionToUse = [](float x) {
+            float temp = x;
+            if (temp >= 1) temp = 1.0;
+            else if (temp <= -1) temp = -1.0;
+            return (temp);
+            };
+        waveshapeRight.functionToUse = [](float x) {
+            float temp = x;
+            if (temp >= 1) temp = 1.0;
+            else if (temp <= -1) temp = -1.0;
+            return (temp);
+            };
+        break;
+    }
+    }
 
     juce::dsp::AudioBlock<float> block(buffer);
 
@@ -307,9 +451,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout TestDistortionAudioProcessor
     layout.add(std::make_unique<juce::AudioParameterFloat>("Output Gain", "Output Gain", juce::NormalisableRange<float>(-50.0f, 0.0f, 0.5f, 1.f), -25.0f));
 
     juce::StringArray stringArray;
-    stringArray.add("Soft");
+    stringArray.add("ArcTan");
+    stringArray.add("HypTan");
+    stringArray.add("Cubic");
+    stringArray.add("Pow5");
+    stringArray.add("Pow7");
     stringArray.add("Hard");
-    stringArray.add("Saturation");
 
     layout.add(std::make_unique<juce::AudioParameterChoice>("Distortion Type", "Distortion Type", stringArray, 0));
 

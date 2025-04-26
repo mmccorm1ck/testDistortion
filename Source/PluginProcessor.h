@@ -13,8 +13,11 @@
 enum DistTypes
 {
     ArcTan,
-    TanHyp,
-    Cubic
+    HypTan,
+    Cubic,
+    Pow5,
+    Pow7,
+    Hard
 };
 
 struct ChainSettings
