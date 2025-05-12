@@ -128,8 +128,8 @@ void TestDistortionAudioProcessor::prepareToPlay (double sampleRate, int samples
 
     auto& waveshapeLeft = leftChain.get<ChainPositions::WaveShape>();
     auto& waveshapeRight = rightChain.get<ChainPositions::WaveShape>();
-    updateWaveShape(waveshapeLeft, chainSettings);
-    updateWaveShape(waveshapeRight, chainSettings);
+    updateWaveShape(waveshapeLeft, chainSettings.distType);
+    updateWaveShape(waveshapeRight, chainSettings.distType);
 }
 
 void TestDistortionAudioProcessor::releaseResources()
@@ -200,8 +200,8 @@ void TestDistortionAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer
 
     auto& waveshapeLeft = leftChain.get<ChainPositions::WaveShape>();
     auto& waveshapeRight = rightChain.get<ChainPositions::WaveShape>();
-    updateWaveShape(waveshapeLeft, chainSettings);
-    updateWaveShape(waveshapeRight, chainSettings);
+    updateWaveShape(waveshapeLeft, chainSettings.distType);
+    updateWaveShape(waveshapeRight, chainSettings.distType);
 
     juce::dsp::AudioBlock<float> block(buffer);
 

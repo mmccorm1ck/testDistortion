@@ -102,9 +102,9 @@ private:
     static void updateCoefficients(Coefficients& old, const Coefficients& replacements);
 
     template<typename ChainType>
-    void updateWaveShape(ChainType& waveshape, const ChainSettings& chainSettings)
+    void updateWaveShape(ChainType& waveshape, const DistTypes& distType)
     {
-        switch (chainSettings.distType)
+        switch (distType)
         {
         case ArcTan:
         {
