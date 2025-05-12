@@ -9,6 +9,8 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <numbers>
+#include <cmath>
 
 enum DistTypes
 {
@@ -98,6 +100,72 @@ private:
 
     using Coefficients = Filter::CoefficientsPtr;
     static void updateCoefficients(Coefficients& old, const Coefficients& replacements);
+
+    template<typename ChainType>
+    void updateWaveShape(ChainType& waveshape, const ChainSettings& chainSettings)
+    {
+        switch (chainSettings.distType)
+        {
+        case ArcTan:
+        {
+            waveshape.functionToUse = [](float x) {
+                return atan(x * std::numbers::pi_v<float> / 2) * 2 / std::numbers::pi_v<float>;
+                };
+            break;
+        }
+        case HypTan:
+        {
+            waveshape.functionToUse = [](float x) {
+                return std::tanh(x);
+                };
+            break;
+        }
+        case Cubic:
+        {
+            waveshape.functionToUse = [](float x) {
+                float temp;
+                if (x >= 1) temp = 2.0 / 3;
+                else if (x <= -1) temp = -2.0 / 3;
+                else temp = x - (std::pow(x, 3) / 3);
+                return temp;
+                };
+            break;
+        }
+        case Pow5:
+        {
+            waveshape.functionToUse = [](float x) {
+                float temp;
+                if (x >= 1) temp = 11.0 / 15;
+                else if (x <= -1) temp = -11.0 / 15;
+                else temp = x - (std::pow(x, 3) / 6) - (std::pow(x, 5) / 10);
+                return temp;
+                };
+
+            break;
+        }
+        case Pow7:
+        {
+            waveshape.functionToUse = [](float x) {
+                float temp;
+                if (x >= 1) temp = 19.0 / 24;
+                else if (x <= -1) temp = -19.0 / 24;
+                else temp = x - (std::pow(x, 3) / 12) - (std::pow(x, 5) / 16) - (std::pow(x, 7) / 16);
+                return temp;
+                };
+            break;
+        }
+        case Hard:
+        {
+            waveshape.functionToUse = [](float x) {
+                float temp = x;
+                if (temp >= 1) temp = 1.0;
+                else if (temp <= -1) temp = -1.0;
+                return (temp);
+                };
+            break;
+        }
+        }
+    }
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TestDistortionAudioProcessor)
