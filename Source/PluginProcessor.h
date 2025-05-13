@@ -167,6 +167,13 @@ private:
         }
     }
 
+    void updateHighCut(const ChainSettings& chainSettings);
+    void updateLowCut(const ChainSettings& chainSettings);
+    void updateGain(const ChainSettings& chainSettings);
+    void updateWaveShaper(const ChainSettings& chainSettings);
+
+    void updateChain();
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TestDistortionAudioProcessor)
 };
