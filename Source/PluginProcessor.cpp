@@ -107,29 +107,6 @@ void TestDistortionAudioProcessor::prepareToPlay (double sampleRate, int samples
     leftChain.prepare(spec);
     rightChain.prepare(spec);
 
-    /*auto chainSettings = getChainSettings(apvts);
-
-    auto lowCutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowFreq, sampleRate, 1);
-    auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
-    auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
-    updateCoefficients(leftLowCut.get<0>().coefficients, lowCutCoefficients[0]);
-    updateCoefficients(rightLowCut.get<0>().coefficients, lowCutCoefficients[0]);
-
-    auto highCutCoefficients = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(chainSettings.highFreq, sampleRate, 1);
-    auto& leftHighCut = leftChain.get<ChainPositions::HighCut>();
-    auto& rightHighCut = rightChain.get<ChainPositions::HighCut>();
-    updateCoefficients(leftHighCut.get<0>().coefficients, highCutCoefficients[0]);
-    updateCoefficients(rightHighCut.get<0>().coefficients, highCutCoefficients[0]);
-
-    leftChain.get<ChainPositions::GainIn>().setGainDecibels(chainSettings.inGain);
-    rightChain.get<ChainPositions::GainIn>().setGainDecibels(chainSettings.inGain);
-    leftChain.get<ChainPositions::GainOut>().setGainDecibels(chainSettings.outGain);
-    rightChain.get<ChainPositions::GainOut>().setGainDecibels(chainSettings.outGain);
-
-    auto& waveshapeLeft = leftChain.get<ChainPositions::WaveShape>();
-    auto& waveshapeRight = rightChain.get<ChainPositions::WaveShape>();
-    updateWaveShape(waveshapeLeft, chainSettings.distType);
-    updateWaveShape(waveshapeRight, chainSettings.distType);*/
     updateChain();
 }
 
@@ -179,30 +156,6 @@ void TestDistortionAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
-
-    /*auto chainSettings = getChainSettings(apvts);
-
-    auto lowCutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowFreq, getSampleRate(), 1);
-    auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
-    auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
-    updateCoefficients(leftLowCut.get<0>().coefficients, lowCutCoefficients[0]);
-    updateCoefficients(rightLowCut.get<0>().coefficients, lowCutCoefficients[0]);
-
-    auto highCutCoefficients = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(chainSettings.highFreq, getSampleRate(), 1);
-    auto& leftHighCut = leftChain.get<ChainPositions::HighCut>();
-    auto& rightHighCut = rightChain.get<ChainPositions::HighCut>();
-    updateCoefficients(leftHighCut.get<0>().coefficients, highCutCoefficients[0]);
-    updateCoefficients(rightHighCut.get<0>().coefficients, highCutCoefficients[0]);
-
-    leftChain.get<ChainPositions::GainIn>().setGainDecibels(chainSettings.inGain);
-    rightChain.get<ChainPositions::GainIn>().setGainDecibels(chainSettings.inGain);
-    leftChain.get<ChainPositions::GainOut>().setGainDecibels(chainSettings.outGain);
-    rightChain.get<ChainPositions::GainOut>().setGainDecibels(chainSettings.outGain);
-
-    auto& waveshapeLeft = leftChain.get<ChainPositions::WaveShape>();
-    auto& waveshapeRight = rightChain.get<ChainPositions::WaveShape>();
-    updateWaveShape(waveshapeLeft, chainSettings.distType);
-    updateWaveShape(waveshapeRight, chainSettings.distType);*/
 
     updateChain();
 
