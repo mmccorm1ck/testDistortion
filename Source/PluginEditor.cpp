@@ -15,6 +15,12 @@ TestDistortionAudioProcessorEditor::TestDistortionAudioProcessorEditor (TestDist
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
+
+    for (auto* comp : getComps())
+    {
+        addAndMakeVisible(comp);
+    }
+
     setSize (600, 400);
 }
 
@@ -37,4 +43,15 @@ void TestDistortionAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+}
+
+std::vector<juce::Component*> TestDistortionAudioProcessorEditor::getComps()
+{
+    return
+    {
+        &lowCutSlider,
+        &highCutSlider,
+        &gainInSlider,
+        &gainOutSlider
+    }
 }

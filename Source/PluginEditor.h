@@ -14,6 +14,16 @@
 //==============================================================================
 /**
 */
+
+class CustomRotarySlider : juce::Slider
+{
+    CustomRotarySlider() : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
+        juce::Slider::TextEntryBoxPosition::NoTextBox)
+    {
+
+    }
+};
+
 class TestDistortionAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
@@ -28,6 +38,12 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     TestDistortionAudioProcessor& audioProcessor;
+
+    CustomRotarySlider lowCutSlider,
+        highCutSlider, gainInSlider,
+        gainOutSlider;
+
+    std::vector<juce::Component*> getComps();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TestDistortionAudioProcessorEditor)
 };
