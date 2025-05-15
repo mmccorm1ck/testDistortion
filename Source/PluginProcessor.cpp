@@ -179,8 +179,8 @@ bool TestDistortionAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* TestDistortionAudioProcessor::createEditor()
 {
-//    return new TestDistortionAudioProcessorEditor (*this);
-    return new juce::GenericAudioProcessorEditor(*this);
+    return new TestDistortionAudioProcessorEditor (*this);
+//    return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
