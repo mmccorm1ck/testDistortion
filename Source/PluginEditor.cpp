@@ -36,13 +36,22 @@ void TestDistortionAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    //g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void TestDistortionAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+    auto bounds = getLocalBounds();
+    auto graphArea = bounds.removeFromTop(bounds.getHeight() * 0.5);
+    auto inputArea = bounds.removeFromLeft(bounds.getWidth() * 0.33);
+    auto outputArea = bounds.removeFromRight(bounds.getWidth() * 0.5);
+
+    gainInSlider.setBounds(inputArea.removeFromTop(inputArea.getHeight() * 0.5));
+    gainOutSlider.setBounds(outputArea.removeFromTop(outputArea.getHeight() * 0.5));
+    lowCutSlider.setBounds(inputArea);
+    highCutSlider.setBounds(outputArea);
 }
 
 std::vector<juce::Component*> TestDistortionAudioProcessorEditor::getComps()
@@ -53,5 +62,5 @@ std::vector<juce::Component*> TestDistortionAudioProcessorEditor::getComps()
         &highCutSlider,
         &gainInSlider,
         &gainOutSlider
-    }
+    };
 }
