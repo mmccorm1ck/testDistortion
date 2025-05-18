@@ -41,7 +41,7 @@ private:
 
     CustomRotarySlider lowCutSlider,
         highCutSlider, gainInSlider,
-        gainOutSlider;
+        gainOutSlider, waveshapeFunctionSlider;
 
     std::vector<juce::Component*> getComps();
 

@@ -52,6 +52,7 @@ void TestDistortionAudioProcessorEditor::resized()
     gainOutSlider.setBounds(outputArea.removeFromTop(outputArea.getHeight() * 0.5));
     lowCutSlider.setBounds(inputArea);
     highCutSlider.setBounds(outputArea);
+    waveshapeFunctionSlider.setBounds(bounds);
 }
 
 std::vector<juce::Component*> TestDistortionAudioProcessorEditor::getComps()
@@ -61,6 +62,7 @@ std::vector<juce::Component*> TestDistortionAudioProcessorEditor::getComps()
         &lowCutSlider,
         &highCutSlider,
         &gainInSlider,
-        &gainOutSlider
+        &gainOutSlider,
+        &waveshapeFunctionSlider
     };
 }
