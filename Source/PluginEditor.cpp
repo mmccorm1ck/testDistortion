@@ -11,7 +11,12 @@
 
 //==============================================================================
 TestDistortionAudioProcessorEditor::TestDistortionAudioProcessorEditor (TestDistortionAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), audioProcessor (p),
+    lowCutSliderAttachment(audioProcessor.apvts, "LowCut Freq", lowCutSlider),
+    highCutSliderAttachment(audioProcessor.apvts, "HighCut Freq", highCutSlider),
+    gainInSliderAttachment(audioProcessor.apvts, "Input Gain", gainInSlider),
+    gainOutSliderAttachment(audioProcessor.apvts, "Output Gain", gainOutSlider),
+    waveshapeFunctionSliderAttachment(audioProcessor.apvts, "Distortion Type", waveshapeFunctionSlider)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
