@@ -33,6 +33,21 @@ struct ChainSettings
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
 
+using Filter = juce::dsp::IIR::Filter<float>;
+using Waveshaper = juce::dsp::WaveShaper<float>;
+using Gain = juce::dsp::Gain<float>;
+using CutFilter = juce::dsp::ProcessorChain<Filter>;
+using MonoChain = juce::dsp::ProcessorChain<CutFilter, Gain, Waveshaper, Gain, CutFilter>;
+
+enum ChainPositions
+{
+    LowCut,
+    GainIn,
+    WaveShape,
+    GainOut,
+    HighCut
+};
+
 //==============================================================================
 /**
 */
@@ -80,23 +95,7 @@ public:
     juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout()};
 
 private:
-    using Filter = juce::dsp::IIR::Filter<float>;
-    using Waveshaper = juce::dsp::WaveShaper<float>;
-    using Gain = juce::dsp::Gain<float>;
-
-    using CutFilter = juce::dsp::ProcessorChain<Filter>;
-    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Gain, Waveshaper, Gain, CutFilter>;
-
     MonoChain leftChain, rightChain;
-
-    enum ChainPositions
-    {
-        LowCut,
-        GainIn,
-        WaveShape,
-        GainOut,
-        HighCut
-    };
 
     using Coefficients = Filter::CoefficientsPtr;
     static void updateCoefficients(Coefficients& old, const Coefficients& replacements);
