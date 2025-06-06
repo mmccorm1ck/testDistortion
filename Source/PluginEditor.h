@@ -11,6 +11,13 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
+float arcTanFunc(float);
+float hypTanFunc(float);
+float cubicFunc(float);
+float pow5Func(float);
+float pow7Func(float);
+float hardFunc(float);
+
 //==============================================================================
 /**
 */

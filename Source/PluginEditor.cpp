@@ -36,12 +36,80 @@ TestDistortionAudioProcessorEditor::~TestDistortionAudioProcessorEditor()
 //==============================================================================
 void TestDistortionAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    using namespace juce;
+    g.fillAll (Colours::black);
+    
+    auto bounds = getLocalBounds();
+    auto graphArea = bounds.removeFromTop(bounds.getHeight() * 0.5);
+    auto w = graphArea.getWidth();
 
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    //g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    auto& waveShape = monoChain.get<ChainPositions::WaveShape>();
+    DistTypes distType = static_cast<DistTypes>(audioProcessor.apvts.getRawParameterValue("Distortion Type")->load());
+
+    float (*wsFunc)(float);
+    wsFunc = arcTanFunc;
+    switch (distType)
+    {
+    case ArcTan:
+    {
+        wsFunc = arcTanFunc;
+        break;
+    }
+    case HypTan:
+    {
+        wsFunc = hypTanFunc;
+        break;
+    }
+    case Cubic:
+    {
+        wsFunc = cubicFunc;
+        break;
+    }
+    case Pow5:
+    {
+        wsFunc = pow5Func;
+        break;
+    }
+    case Pow7:
+    {
+        wsFunc = pow7Func;
+        break;
+    }
+    default:
+    {
+        wsFunc = hardFunc;
+        break;
+    }
+    }
+
+    auto sampleRate = audioProcessor.getSampleRate();
+
+    std::vector<double> mags;
+    mags.resize(w);
+
+    for (int i = 0; i < w; ++i) {
+        float input = 2 * static_cast<float>(i)/w;
+        mags[i] = wsFunc(input);
+    }
+
+    Path functionPath;
+
+    const double outputMin = graphArea.getBottom();
+    const double outputMax = graphArea.getY();
+    auto map = [outputMin, outputMax](double input)
+        {
+            return jmap(input, 0.0, 1.0, outputMin, outputMax);
+        };
+    functionPath.startNewSubPath(graphArea.getX(), map(mags.front()));
+
+    for (size_t i = 1; i < mags.size(); ++i) {
+        functionPath.lineTo(graphArea.getX() + i, map(mags[i]));
+    }
+
+    g.setColour(Colours::blue);
+    g.drawRoundedRectangle(graphArea.toFloat(), 4.f, 1.f);
+    g.setColour(Colours::white);
+    g.strokePath(functionPath, PathStrokeType(2.f));
 }
 
 void TestDistortionAudioProcessorEditor::resized()
@@ -70,4 +138,47 @@ std::vector<juce::Component*> TestDistortionAudioProcessorEditor::getComps()
         &gainOutSlider,
         &waveshapeFunctionSlider
     };
+}
+
+float arcTanFunc(float x)
+{
+    return atan(x * std::numbers::pi_v<float> / 2) * 2 / std::numbers::pi_v<float>;
+}
+
+float hypTanFunc(float x)
+{
+    return std::tanh(x);
+}
+float cubicFunc(float x)
+{
+    float temp;
+    if (x >= 1) temp = 2.f / 3;
+    else if (x <= -1) temp = -2.f / 3;
+    else temp = x - (std::pow(x, 3) / 3);
+    return temp;
+}
+
+float pow5Func(float x)
+{
+    float temp;
+    if (x >= 1) temp = 11.f / 15;
+    else if (x <= -1) temp = -11.f / 15;
+    else temp = x - (std::pow(x, 3) / 6) - (std::pow(x, 5) / 10);
+    return temp;
+}
+
+float pow7Func(float x)
+{
+    float temp;
+    if (x >= 1) temp = 19.f / 24;
+    else if (x <= -1) temp = -19.f / 24;
+    else temp = x - (std::pow(x, 3) / 12) - (std::pow(x, 5) / 16) - (std::pow(x, 7) / 16);
+    return temp;
+}
+float hardFunc(float x)
+{
+    float temp = x;
+    if (temp >= 1) temp = 1.f;
+    else if (temp <= -1) temp = -1.f;
+    return (temp);
 }

@@ -123,8 +123,8 @@ private:
         {
             waveshape.functionToUse = [](float x) {
                 float temp;
-                if (x >= 1) temp = 2.0 / 3;
-                else if (x <= -1) temp = -2.0 / 3;
+                if (x >= 1) temp = 2.f / 3;
+                else if (x <= -1) temp = -2.f / 3;
                 else temp = x - (std::pow(x, 3) / 3);
                 return temp;
                 };
@@ -134,8 +134,8 @@ private:
         {
             waveshape.functionToUse = [](float x) {
                 float temp;
-                if (x >= 1) temp = 11.0 / 15;
-                else if (x <= -1) temp = -11.0 / 15;
+                if (x >= 1) temp = 11.f / 15;
+                else if (x <= -1) temp = -11.f / 15;
                 else temp = x - (std::pow(x, 3) / 6) - (std::pow(x, 5) / 10);
                 return temp;
                 };
@@ -146,8 +146,8 @@ private:
         {
             waveshape.functionToUse = [](float x) {
                 float temp;
-                if (x >= 1) temp = 19.0 / 24;
-                else if (x <= -1) temp = -19.0 / 24;
+                if (x >= 1) temp = 19.f / 24;
+                else if (x <= -1) temp = -19.f / 24;
                 else temp = x - (std::pow(x, 3) / 12) - (std::pow(x, 5) / 16) - (std::pow(x, 7) / 16);
                 return temp;
                 };
@@ -157,8 +157,8 @@ private:
         {
             waveshape.functionToUse = [](float x) {
                 float temp = x;
-                if (temp >= 1) temp = 1.0;
-                else if (temp <= -1) temp = -1.0;
+                if (temp >= 1) temp = 1.f;
+                else if (temp <= -1) temp = -1.f;
                 return (temp);
                 };
             break;
