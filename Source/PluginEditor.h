@@ -31,7 +31,8 @@ struct CustomRotarySlider : juce::Slider
     }
 };
 
-class TestDistortionAudioProcessorEditor  : public juce::AudioProcessorEditor
+class TestDistortionAudioProcessorEditor  : public juce::AudioProcessorEditor,
+    juce::AudioProcessorParameter::Listener, juce::Timer
 {
 public:
     TestDistortionAudioProcessorEditor (TestDistortionAudioProcessor&);
@@ -41,10 +42,16 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 
+    void parameterValueChanged(int parameterIndex, float newValue) override;
+    void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override {};
+    void timerCallback() override;
+
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     TestDistortionAudioProcessor& audioProcessor;
+
+    juce::Atomic<bool> parametersChanged { false };
 
     CustomRotarySlider lowCutSlider,
         highCutSlider, gainInSlider,

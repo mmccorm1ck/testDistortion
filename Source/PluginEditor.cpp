@@ -26,11 +26,24 @@ TestDistortionAudioProcessorEditor::TestDistortionAudioProcessorEditor (TestDist
         addAndMakeVisible(comp);
     }
 
-    setSize (600, 400);
+    const auto& params = audioProcessor.getParameters();
+    for (auto param : params)
+    {
+        param->addListener(this);
+    }
+
+    startTimerHz(60);
+
+    setSize (600, 500);
 }
 
 TestDistortionAudioProcessorEditor::~TestDistortionAudioProcessorEditor()
 {
+    const auto& params = audioProcessor.getParameters();
+    for (auto param : params)
+    {
+        param->removeListener(this);
+    }
 }
 
 //==============================================================================
@@ -40,7 +53,7 @@ void TestDistortionAudioProcessorEditor::paint (juce::Graphics& g)
     g.fillAll (Colours::black);
     
     auto bounds = getLocalBounds();
-    auto graphArea = bounds.removeFromTop(bounds.getHeight() * 0.5);
+    auto graphArea = bounds.removeFromTop(bounds.getHeight() * 0.6);
     auto w = graphArea.getWidth();
 
     auto& waveShape = monoChain.get<ChainPositions::WaveShape>();
@@ -117,7 +130,7 @@ void TestDistortionAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     auto bounds = getLocalBounds();
-    auto graphArea = bounds.removeFromTop(bounds.getHeight() * 0.5);
+    auto graphArea = bounds.removeFromTop(bounds.getHeight() * 0.6);
     auto inputArea = bounds.removeFromLeft(bounds.getWidth() * 0.33);
     auto outputArea = bounds.removeFromRight(bounds.getWidth() * 0.5);
 
@@ -126,6 +139,20 @@ void TestDistortionAudioProcessorEditor::resized()
     lowCutSlider.setBounds(inputArea);
     highCutSlider.setBounds(outputArea);
     waveshapeFunctionSlider.setBounds(bounds);
+}
+
+void TestDistortionAudioProcessorEditor::parameterValueChanged(int parameterIndex, float newValue)
+{
+    parametersChanged.set(true);
+}
+
+void TestDistortionAudioProcessorEditor::timerCallback()
+{
+    if (parametersChanged.compareAndSetBool(false, true))
+    {
+        auto chainSettings = getChainSettings(audioProcessor.apvts);
+        repaint();
+    }
 }
 
 std::vector<juce::Component*> TestDistortionAudioProcessorEditor::getComps()
