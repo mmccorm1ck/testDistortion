@@ -9,23 +9,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-//==============================================================================
-TestDistortionAudioProcessorEditor::TestDistortionAudioProcessorEditor (TestDistortionAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p),
-    lowCutSliderAttachment(audioProcessor.apvts, "LowCut Freq", lowCutSlider),
-    highCutSliderAttachment(audioProcessor.apvts, "HighCut Freq", highCutSlider),
-    gainInSliderAttachment(audioProcessor.apvts, "Input Gain", gainInSlider),
-    gainOutSliderAttachment(audioProcessor.apvts, "Output Gain", gainOutSlider),
-    waveshapeFunctionSliderAttachment(audioProcessor.apvts, "Distortion Type", waveshapeFunctionSlider)
+TransferGraphComponent::TransferGraphComponent(TestDistortionAudioProcessor& p) : audioProcessor(p)
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-
-    for (auto* comp : getComps())
-    {
-        addAndMakeVisible(comp);
-    }
-
     const auto& params = audioProcessor.getParameters();
     for (auto param : params)
     {
@@ -33,11 +18,9 @@ TestDistortionAudioProcessorEditor::TestDistortionAudioProcessorEditor (TestDist
     }
 
     startTimerHz(60);
-
-    setSize (600, 500);
 }
 
-TestDistortionAudioProcessorEditor::~TestDistortionAudioProcessorEditor()
+TransferGraphComponent::~TransferGraphComponent()
 {
     const auto& params = audioProcessor.getParameters();
     for (auto param : params)
@@ -46,14 +29,26 @@ TestDistortionAudioProcessorEditor::~TestDistortionAudioProcessorEditor()
     }
 }
 
-//==============================================================================
-void TestDistortionAudioProcessorEditor::paint (juce::Graphics& g)
+void TransferGraphComponent::parameterValueChanged(int parameterIndex, float newValue)
+{
+    parametersChanged.set(true);
+}
+
+void TransferGraphComponent::timerCallback()
+{
+    if (parametersChanged.compareAndSetBool(false, true))
+    {
+        auto chainSettings = getChainSettings(audioProcessor.apvts);
+        repaint();
+    }
+}
+
+void TransferGraphComponent::paint(juce::Graphics& g)
 {
     using namespace juce;
-    g.fillAll (Colours::black);
-    
-    auto bounds = getLocalBounds();
-    auto graphArea = bounds.removeFromTop(bounds.getHeight() * 0.6);
+    g.fillAll(Colours::black);
+
+    auto graphArea = getLocalBounds();
     auto w = graphArea.getWidth();
 
     auto& waveShape = monoChain.get<ChainPositions::WaveShape>();
@@ -101,7 +96,7 @@ void TestDistortionAudioProcessorEditor::paint (juce::Graphics& g)
     mags.resize(w);
 
     for (int i = 0; i < w; ++i) {
-        float input = 2 * static_cast<float>(i)/w;
+        float input = 2 * static_cast<float>(i) / w;
         mags[i] = wsFunc(input);
     }
 
@@ -125,6 +120,39 @@ void TestDistortionAudioProcessorEditor::paint (juce::Graphics& g)
     g.strokePath(functionPath, PathStrokeType(2.f));
 }
 
+//==============================================================================
+TestDistortionAudioProcessorEditor::TestDistortionAudioProcessorEditor (TestDistortionAudioProcessor& p)
+    : AudioProcessorEditor (&p), audioProcessor (p),
+    transferGraphComponent(audioProcessor),
+    lowCutSliderAttachment(audioProcessor.apvts, "LowCut Freq", lowCutSlider),
+    highCutSliderAttachment(audioProcessor.apvts, "HighCut Freq", highCutSlider),
+    gainInSliderAttachment(audioProcessor.apvts, "Input Gain", gainInSlider),
+    gainOutSliderAttachment(audioProcessor.apvts, "Output Gain", gainOutSlider),
+    waveshapeFunctionSliderAttachment(audioProcessor.apvts, "Distortion Type", waveshapeFunctionSlider)
+{
+    // Make sure that before the constructor has finished, you've set the
+    // editor's size to whatever you need it to be.
+
+    for (auto* comp : getComps())
+    {
+        addAndMakeVisible(comp);
+    }
+
+    setSize (600, 500);
+}
+
+TestDistortionAudioProcessorEditor::~TestDistortionAudioProcessorEditor()
+{
+
+}
+
+//==============================================================================
+void TestDistortionAudioProcessorEditor::paint (juce::Graphics& g)
+{
+    using namespace juce;
+    g.fillAll (Colours::black);
+}
+
 void TestDistortionAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
@@ -134,25 +162,12 @@ void TestDistortionAudioProcessorEditor::resized()
     auto inputArea = bounds.removeFromLeft(bounds.getWidth() * 0.33);
     auto outputArea = bounds.removeFromRight(bounds.getWidth() * 0.5);
 
+    transferGraphComponent.setBounds(graphArea);
     gainInSlider.setBounds(inputArea.removeFromTop(inputArea.getHeight() * 0.5));
     gainOutSlider.setBounds(outputArea.removeFromTop(outputArea.getHeight() * 0.5));
     lowCutSlider.setBounds(inputArea);
     highCutSlider.setBounds(outputArea);
     waveshapeFunctionSlider.setBounds(bounds);
-}
-
-void TestDistortionAudioProcessorEditor::parameterValueChanged(int parameterIndex, float newValue)
-{
-    parametersChanged.set(true);
-}
-
-void TestDistortionAudioProcessorEditor::timerCallback()
-{
-    if (parametersChanged.compareAndSetBool(false, true))
-    {
-        auto chainSettings = getChainSettings(audioProcessor.apvts);
-        repaint();
-    }
 }
 
 std::vector<juce::Component*> TestDistortionAudioProcessorEditor::getComps()
@@ -163,7 +178,8 @@ std::vector<juce::Component*> TestDistortionAudioProcessorEditor::getComps()
         &highCutSlider,
         &gainInSlider,
         &gainOutSlider,
-        &waveshapeFunctionSlider
+        &waveshapeFunctionSlider,
+        &transferGraphComponent
     };
 }
 
