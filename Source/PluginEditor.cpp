@@ -123,6 +123,11 @@ void TransferGraphComponent::paint(juce::Graphics& g)
 //==============================================================================
 TestDistortionAudioProcessorEditor::TestDistortionAudioProcessorEditor (TestDistortionAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p),
+    lowCutSlider(*audioProcessor.apvts.getParameter("LowCut Freq"), "Hz"),
+    highCutSlider(*audioProcessor.apvts.getParameter("HighCut Freq"), "Hz"),
+    gainInSlider(*audioProcessor.apvts.getParameter("Input Gain"), "dB"),
+    gainOutSlider(*audioProcessor.apvts.getParameter("Output Gain"), "dB"),
+    waveshapeFunctionSlider(*audioProcessor.apvts.getParameter("Distortion Type"), ""),
     transferGraphComponent(audioProcessor),
     lowCutSliderAttachment(audioProcessor.apvts, "LowCut Freq", lowCutSlider),
     highCutSliderAttachment(audioProcessor.apvts, "HighCut Freq", highCutSlider),
@@ -192,6 +197,7 @@ float hypTanFunc(float x)
 {
     return std::tanh(x);
 }
+
 float cubicFunc(float x)
 {
     float temp;
@@ -218,6 +224,7 @@ float pow7Func(float x)
     else temp = x - (std::pow(x, 3) / 12) - (std::pow(x, 5) / 16) - (std::pow(x, 7) / 16);
     return temp;
 }
+
 float hardFunc(float x)
 {
     float temp = x;
