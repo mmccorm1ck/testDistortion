@@ -25,23 +25,39 @@ void LookAndFeel::drawRotarySlider(juce::Graphics& g,
     g.setColour(Colours::blue);
     g.drawEllipse(bounds, 1.f);
 
-    auto centre = bounds.getCentre();
-    Path p;
+    if (auto* rswl = dynamic_cast<RotarySliderWithLabels*>(&slider))
+    {
+        auto centre = bounds.getCentre();
+        Path p;
 
-    Rectangle<float> r;
-    r.setLeft(centre.getX() - 2);
-    r.setRight(centre.getX() + 2);
-    r.setTop(bounds.getY());
-    r.setBottom(centre.getY());
+        Rectangle<float> r;
+        r.setLeft(centre.getX() - 2);
+        r.setRight(centre.getX() + 2);
+        r.setTop(bounds.getY());
+        r.setBottom(bounds.getY() + 16);
 
-    p.addRectangle(r);
+        p.addRoundedRectangle(r, 2.f);
 
-    jassert(rotaryStartAngle < rotartEndAngle);
-    auto sliderAngRad = jmap(sliderPosProportional, 0.f, 1.f, rotaryStartAngle, rotartEndAngle);
+        jassert(rotaryStartAngle < rotartEndAngle);
+        auto sliderAngRad = jmap(sliderPosProportional, 0.f, 1.f, rotaryStartAngle, rotartEndAngle);
 
-    p.applyTransform(AffineTransform().rotated(sliderAngRad, centre.getX(), centre.getY()));
+        p.applyTransform(AffineTransform().rotated(sliderAngRad, centre.getX(), centre.getY()));
 
-    g.fillPath(p);
+        g.fillPath(p);
+
+        g.setFont(rswl->getTextHeight());
+        auto text = rswl->getDisplayString();
+        auto strWidth = g.getCurrentFont().getStringWidth(text);
+
+        r.setSize(strWidth + 4, rswl->getTextHeight() + 4);
+        r.setCentre(centre);
+
+        g.setColour(Colours::black);
+        g.fillRect(r);
+
+        g.setColour(Colours::white);
+        g.drawFittedText(text, r.toNearestInt(), juce::Justification::centred, 1);
+    }
 }
 
 void RotarySliderWithLabels::paint(juce::Graphics& g)
@@ -60,10 +76,15 @@ void RotarySliderWithLabels::paint(juce::Graphics& g)
         startAng, endAng, *this);
 }
 
+juce::String RotarySliderWithLabels::getDisplayString() const
+{
+    return juce::String(getValue());
+}
+
 juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const
 {
     auto bounds = getLocalBounds();
-    auto size = juce::jmin(bounds.getWidth(), bounds.getHeight()) - (getTextBoxHeight() * 2);
+    auto size = juce::jmin(bounds.getWidth(), bounds.getHeight()) - (getTextHeight() * 2);
 
     juce::Rectangle<int> r;
     r.setSize(size, size);
