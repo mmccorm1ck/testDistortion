@@ -9,6 +9,62 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+void LookAndFeel::drawRotarySlider(juce::Graphics& g,
+    int x, int y, int width, int height,
+    float sliderPosProportional,
+    float rotaryStartAngle,
+    float rotartEndAngle,
+    juce::Slider& slider)
+{
+    using namespace juce;
+
+    auto bounds = Rectangle<float>(x, y, width, height);
+
+    g.setColour(Colours::grey);
+    g.fillEllipse(bounds);
+    g.setColour(Colours::blue);
+    g.drawEllipse(bounds, 1.f);
+
+    auto centre = bounds.getCentre();
+    Path p;
+
+    Rectangle<float> r;
+    r.setLeft(centre.getX() - 2);
+    r.setRight(centre.getX() + 2);
+    r.setTop(bounds.getY());
+    r.setBottom(centre.getY());
+
+    p.addRectangle(r);
+
+    jassert(rotaryStartAngle < rotartEndAngle);
+    auto sliderAngRad = jmap(sliderPosProportional, 0.f, 1.f, rotaryStartAngle, rotartEndAngle);
+
+    p.applyTransform(AffineTransform().rotated(sliderAngRad, centre.getX(), centre.getY()));
+
+    g.fillPath(p);
+}
+
+void RotarySliderWithLabels::paint(juce::Graphics& g)
+{
+    using namespace juce;
+
+    auto startAng = degreesToRadians(225.f);
+    auto endAng = degreesToRadians(135.f) + MathConstants<float>::twoPi;
+
+    auto range = getRange();
+    auto sliderBounds = getSliderBounds();
+
+    getLookAndFeel().drawRotarySlider(g, sliderBounds.getX(), sliderBounds.getY(),
+        sliderBounds.getWidth(), sliderBounds.getHeight(),
+        jmap(getValue(), range.getStart(), range.getEnd(), 0.0, 1.0),
+        startAng, endAng, *this);
+}
+
+juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const
+{
+    return getLocalBounds();
+}
+
 TransferGraphComponent::TransferGraphComponent(TestDistortionAudioProcessor& p) : audioProcessor(p)
 {
     const auto& params = audioProcessor.getParameters();
