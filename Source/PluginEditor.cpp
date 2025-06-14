@@ -74,6 +74,30 @@ void RotarySliderWithLabels::paint(juce::Graphics& g)
         sliderBounds.getWidth(), sliderBounds.getHeight(),
         jmap(getValue(), range.getStart(), range.getEnd(), 0.0, 1.0),
         startAng, endAng, *this);
+
+    auto centre = sliderBounds.toFloat().getCentre();
+    auto radius = sliderBounds.getWidth() * 0.5f;
+
+    g.setColour(Colours::white);
+    g.setFont(getTextHeight());
+
+    auto numChoices = labels.size();
+    for (int i = 0; i < numChoices; ++i)
+    {
+        auto pos = labels[i].pos;
+        jassert(0.f <= pos);
+        jassert(pos <= 1.f);
+
+        auto ang = jmap(pos, 0.f, 1.f, startAng, endAng);
+        auto drawPoint = centre.getPointOnCircumference(radius + getTextHeight(), ang);
+        Rectangle<float> r;
+        auto str = labels[i].label;
+        r.setSize(g.getCurrentFont().getStringWidth(str), getTextHeight());
+        r.setCentre(drawPoint);
+        r.setY(r.getY() + getTextHeight() * 0.5f);
+
+        g.drawFittedText(str, r.toNearestInt(), juce::Justification::centred, 1);
+    }
 }
 
 juce::String RotarySliderWithLabels::getDisplayString() const
@@ -254,6 +278,15 @@ TestDistortionAudioProcessorEditor::TestDistortionAudioProcessorEditor (TestDist
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
+
+    lowCutSlider.labels.add({ 0.f, "20Hz" });
+    lowCutSlider.labels.add({ 1.f, "20kHz" });
+    highCutSlider.labels.add({ 0.f, "20Hz" });
+    highCutSlider.labels.add({ 1.f, "20kHz" });
+    gainInSlider.labels.add({ 0.f, "0dB" });
+    gainInSlider.labels.add({ 1.f, "50dB" });
+    gainOutSlider.labels.add({ 0.f, "-50dB" });
+    gainOutSlider.labels.add({ 1.f, "0dB" });
 
     for (auto* comp : getComps())
     {
