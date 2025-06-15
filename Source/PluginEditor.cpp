@@ -128,11 +128,11 @@ juce::String RotarySliderWithLabels::getDisplayString() const
 
     if (suffix.isNotEmpty())
     {
+        if (suffix == "dB" && getValue() > 0)
+            str = "+" + str;
         str << " ";
         if (addK)
-        {
             str << "k";
-        }
         str << suffix;
     }
     return str;
@@ -145,8 +145,13 @@ juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const
 
     juce::Rectangle<int> r;
     r.setSize(size, size);
-    r.setCentre(bounds.getCentreX(), 0);
-    r.setY(2);
+    if (labels.size() == 0)
+        r.setCentre(bounds.getCentre());
+    else
+    {
+        r.setCentre(bounds.getCentreX(), 0);
+        r.setY(2);
+    }
     return r;
 }
 
@@ -326,7 +331,7 @@ TestDistortionAudioProcessorEditor::TestDistortionAudioProcessorEditor (TestDist
     highCutSlider.labels.add({ 0.f, "20Hz" });
     highCutSlider.labels.add({ 1.f, "20kHz" });
     gainInSlider.labels.add({ 0.f, "0dB" });
-    gainInSlider.labels.add({ 1.f, "50dB" });
+    gainInSlider.labels.add({ 1.f, "+50dB" });
     gainOutSlider.labels.add({ 0.f, "-50dB" });
     gainOutSlider.labels.add({ 1.f, "0dB" });
 
