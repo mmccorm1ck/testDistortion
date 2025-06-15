@@ -190,6 +190,9 @@ void TransferGraphComponent::paint(juce::Graphics& g)
     g.fillAll(Colours::black);
 
     auto graphArea = getLocalBounds();
+    
+    g.drawImage(background, getLocalBounds().toFloat());
+
     auto w = graphArea.getWidth();
 
     auto& waveShape = monoChain.get<ChainPositions::WaveShape>();
@@ -259,6 +262,45 @@ void TransferGraphComponent::paint(juce::Graphics& g)
     g.drawRoundedRectangle(graphArea.toFloat(), 4.f, 1.f);
     g.setColour(Colours::white);
     g.strokePath(functionPath, PathStrokeType(2.f));
+}
+
+void TransferGraphComponent::resized()
+{
+    using namespace juce;
+    background = Image(Image::PixelFormat::RGB, getWidth(), getHeight(), true);
+    Graphics g(background);
+
+    Array<float> xAxis
+    {
+        0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1,
+        1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9
+    };
+    g.setColour(Colours::grey);
+    float dashPattern[2];
+    dashPattern[0] = 5.f;
+    dashPattern[1] = 5.f;
+    Line<float> l;
+    for (auto a : xAxis)
+    {
+        auto x = jmap(a, 0.f, 2.f, 0.f, float(getWidth()));
+        l.setStart(x, 0.f);
+        l.setEnd(x, getHeight());
+        if (a == 1.f)
+            g.drawDashedLine(l, dashPattern, 2, 2.f);
+        else
+            g.drawDashedLine(l, dashPattern, 2, 1.f);
+    }
+    Array<float> yAxis
+    {
+        0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9
+    };
+    for (auto a : yAxis)
+    {
+        auto y = jmap(a, 0.f, 1.f, 0.f, float(getHeight()));
+        l.setStart(0.f, y);
+        l.setEnd(getWidth(), y);
+        g.drawDashedLine(l, dashPattern, 2, 1.f);
+    }
 }
 
 //==============================================================================

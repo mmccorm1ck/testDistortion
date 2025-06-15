@@ -26,10 +26,12 @@ struct TransferGraphComponent : juce::Component, juce::AudioProcessorParameter::
     void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override {};
     void timerCallback() override;
     void paint(juce::Graphics& g) override;
+    void resized() override;
 private:
     TestDistortionAudioProcessor& audioProcessor;
     juce::Atomic<bool> parametersChanged{ false };
     MonoChain monoChain;
+    juce::Image background;
 };
 
 //==============================================================================
