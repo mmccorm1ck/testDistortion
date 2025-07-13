@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include <array>
 
 float arcTanFunc(float);
 float hypTanFunc(float);
@@ -32,6 +33,10 @@ private:
     juce::Atomic<bool> parametersChanged{ false };
     MonoChain monoChain;
     juce::Image background;
+
+    SingleChannelSampleFifo<TestDistortionAudioProcessor::BlockType>* leftChannelFifo;
+    SingleChannelSampleFifo<TestDistortionAudioProcessor::BlockType>* rightChannelFifo;
+    float maxMagnitude;
 };
 
 //==============================================================================

@@ -108,6 +108,9 @@ void TestDistortionAudioProcessor::prepareToPlay (double sampleRate, int samples
     rightChain.prepare(spec);
 
     updateChain();
+
+    leftChannelFifo.prepare(samplesPerBlock);
+    rightChannelFifo.prepare(samplesPerBlock);
 }
 
 void TestDistortionAudioProcessor::releaseResources()
@@ -169,6 +172,9 @@ void TestDistortionAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer
 
     leftChain.process(leftContext);
     rightChain.process(rightContext);
+
+    leftChannelFifo.update(buffer);
+    rightChannelFifo.update(buffer);
 }
 
 //==============================================================================

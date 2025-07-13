@@ -155,7 +155,10 @@ juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const
     return r;
 }
 
-TransferGraphComponent::TransferGraphComponent(TestDistortionAudioProcessor& p) : audioProcessor(p)
+TransferGraphComponent::TransferGraphComponent(TestDistortionAudioProcessor& p) :
+    audioProcessor(p),
+    leftChannelFifo(&audioProcessor.leftChannelFifo),
+    rightChannelFifo(&audioProcessor.rightChannelFifo)
 {
     const auto& params = audioProcessor.getParameters();
     for (auto param : params)
@@ -182,11 +185,41 @@ void TransferGraphComponent::parameterValueChanged(int parameterIndex, float new
 
 void TransferGraphComponent::timerCallback()
 {
+    juce::AudioBuffer<float> tempIncomingBuffer;
+    maxMagnitude = 0.0;
+
+    while (leftChannelFifo->getNumCompleteBuffersAvailable() > 0)
+    {
+        if (leftChannelFifo->getAudioBuffer(tempIncomingBuffer))
+        {
+            auto size = tempIncomingBuffer.getNumSamples();
+            float incomingMagnitude = tempIncomingBuffer.getMagnitude(0, size);
+            if (incomingMagnitude > maxMagnitude)
+            {
+                maxMagnitude = incomingMagnitude;
+            }
+        }
+    }
+
+    while (rightChannelFifo->getNumCompleteBuffersAvailable() > 0)
+    {
+        if (rightChannelFifo->getAudioBuffer(tempIncomingBuffer))
+        {
+            auto size = tempIncomingBuffer.getNumSamples();
+            float incomingMagnitude = tempIncomingBuffer.getMagnitude(0, size);
+            if (incomingMagnitude > maxMagnitude)
+            {
+                maxMagnitude = incomingMagnitude;
+            }
+        }
+    }
+
     if (parametersChanged.compareAndSetBool(false, true))
     {
         auto chainSettings = getChainSettings(audioProcessor.apvts);
-        repaint();
     }
+
+    repaint();
 }
 
 void TransferGraphComponent::paint(juce::Graphics& g)
@@ -267,6 +300,7 @@ void TransferGraphComponent::paint(juce::Graphics& g)
     g.drawRoundedRectangle(graphArea.toFloat(), 4.f, 1.f);
     g.setColour(Colours::white);
     g.strokePath(functionPath, PathStrokeType(2.f));
+    g.drawText(std::to_string(maxMagnitude), graphArea.toFloat(), juce::Justification::centred, 1.f); // For testing
 }
 
 void TransferGraphComponent::resized()
