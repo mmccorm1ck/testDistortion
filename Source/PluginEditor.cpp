@@ -284,6 +284,7 @@ void TransferGraphComponent::paint(juce::Graphics& g)
 
     Path functionPath;
 
+    const double inputMax = graphArea.getRight();
     const double outputMin = graphArea.getBottom();
     const double outputMax = graphArea.getY();
     auto map = [outputMin, outputMax](double input)
@@ -296,11 +297,17 @@ void TransferGraphComponent::paint(juce::Graphics& g)
         functionPath.lineTo(graphArea.getX() + i, map(mags[i]));
     }
 
+    int magX = jmap(static_cast<double>(maxMagnitude), 0.0, 2.0, 0.0, inputMax);
+    int magY = map(static_cast<double>(wsFunc(maxMagnitude)));
+
+    g.setColour(Colours::lightblue);
+    g.drawHorizontalLine(magY, 0.0, magX);
+    g.drawVerticalLine(magX, magY, outputMin);
     g.setColour(Colours::blue);
     g.drawRoundedRectangle(graphArea.toFloat(), 4.f, 1.f);
     g.setColour(Colours::white);
     g.strokePath(functionPath, PathStrokeType(2.f));
-    g.drawText(std::to_string(maxMagnitude), graphArea.toFloat(), juce::Justification::centred, 1.f); // For testing
+    //g.drawText(std::to_string(maxMagnitude), graphArea.toFloat(), juce::Justification::centred, 1.f); // For testing
 }
 
 void TransferGraphComponent::resized()
