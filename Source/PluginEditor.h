@@ -37,6 +37,7 @@ private:
     SingleChannelSampleFifo<TestDistortionAudioProcessor::BlockType>* leftChannelFifo;
     SingleChannelSampleFifo<TestDistortionAudioProcessor::BlockType>* rightChannelFifo;
     float maxMagnitude;
+    float dampedMagnitude;
 };
 
 //==============================================================================

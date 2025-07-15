@@ -186,6 +186,7 @@ void TransferGraphComponent::parameterValueChanged(int parameterIndex, float new
 void TransferGraphComponent::timerCallback()
 {
     juce::AudioBuffer<float> tempIncomingBuffer;
+    float prevMagnitude = maxMagnitude;
     maxMagnitude = 0.0;
 
     while (leftChannelFifo->getNumCompleteBuffersAvailable() > 0)
@@ -213,6 +214,7 @@ void TransferGraphComponent::timerCallback()
             }
         }
     }
+    dampedMagnitude = (maxMagnitude * 3 + prevMagnitude) / 4;
 
     if (parametersChanged.compareAndSetBool(false, true))
     {
@@ -297,8 +299,8 @@ void TransferGraphComponent::paint(juce::Graphics& g)
         functionPath.lineTo(graphArea.getX() + i, map(mags[i]));
     }
 
-    int magX = jmap(static_cast<double>(maxMagnitude), 0.0, 2.0, 0.0, inputMax);
-    int magY = map(static_cast<double>(wsFunc(maxMagnitude)));
+    int magX = jmap(static_cast<double>(dampedMagnitude), 0.0, 2.0, 0.0, inputMax);
+    int magY = map(static_cast<double>(wsFunc(dampedMagnitude)));
 
     g.setColour(Colours::lightblue);
     g.drawHorizontalLine(magY, 0.0, magX);
