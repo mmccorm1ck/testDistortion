@@ -230,7 +230,7 @@ void TransferGraphComponent::paint(juce::Graphics& g)
     g.fillAll(Colours::black);
 
     auto graphArea = getLocalBounds();
-    
+
     g.drawImage(background, getLocalBounds().toFloat());
 
     auto w = graphArea.getWidth();
@@ -309,7 +309,6 @@ void TransferGraphComponent::paint(juce::Graphics& g)
     g.drawRoundedRectangle(graphArea.toFloat(), 4.f, 1.f);
     g.setColour(Colours::white);
     g.strokePath(functionPath, PathStrokeType(2.f));
-    //g.drawText(std::to_string(maxMagnitude), graphArea.toFloat(), juce::Justification::centred, 1.f); // For testing
 }
 
 void TransferGraphComponent::resized()

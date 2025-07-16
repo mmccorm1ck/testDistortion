@@ -173,8 +173,11 @@ void TestDistortionAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer
     leftChain.process(leftContext);
     rightChain.process(rightContext);
 
-    leftChannelFifo.update(buffer);
-    rightChannelFifo.update(buffer);
+    juce::AudioBuffer<float> fifoBuffer(buffer.getNumChannels(), buffer.getNumSamples());
+    fifoBuffer.copyFrom(0, 0, leftChain.get<ChainPositions::FifoBlk>().getBuffer().getReadPointer(0), leftChain.get<ChainPositions::FifoBlk>().getNumSamples());
+    fifoBuffer.copyFrom(1, 0, rightChain.get<ChainPositions::FifoBlk>().getBuffer().getReadPointer(0), rightChain.get<ChainPositions::FifoBlk>().getNumSamples());
+    leftChannelFifo.update(fifoBuffer);
+    rightChannelFifo.update(fifoBuffer);
 }
 
 //==============================================================================

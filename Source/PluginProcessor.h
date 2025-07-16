@@ -147,18 +147,44 @@ struct ChainSettings
     DistTypes distType { DistTypes::ArcTan };
 };
 
+struct FifoBlock
+{
+    FifoBlock()
+    {
+        fifoBuffer.setSize(1, 441);
+    }
+    void prepare(const juce::dsp::ProcessSpec& spec) noexcept {}
+    juce::AudioBuffer<float> getBuffer()
+    {
+        return fifoBuffer;
+    }
+    int getNumSamples()
+    {
+        return fifoBuffer.getNumSamples();
+    }
+    void process(const juce::dsp::ProcessContextReplacing<float>& context)
+    {
+        const juce::dsp::AudioBlock<const float> tempBlock = context.getOutputBlock();
+        fifoBuffer.setSize(1, tempBlock.getNumSamples(), false, false, true);
+        fifoBuffer.copyFrom(0, 0, tempBlock.getChannelPointer(0), tempBlock.getNumSamples());
+    }
+private:
+    juce::AudioBuffer<float> fifoBuffer;
+};
+
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
 
 using Filter = juce::dsp::IIR::Filter<float>;
 using Waveshaper = juce::dsp::WaveShaper<float>;
 using Gain = juce::dsp::Gain<float>;
 using CutFilter = juce::dsp::ProcessorChain<Filter>;
-using MonoChain = juce::dsp::ProcessorChain<CutFilter, Gain, Waveshaper, Gain, CutFilter>;
+using MonoChain = juce::dsp::ProcessorChain<CutFilter, Gain, FifoBlock, Waveshaper, Gain, CutFilter>;
 
 enum ChainPositions
 {
     LowCut,
     GainIn,
+    FifoBlk,
     WaveShape,
     GainOut,
     HighCut
