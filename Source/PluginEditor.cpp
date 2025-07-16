@@ -372,10 +372,10 @@ TestDistortionAudioProcessorEditor::TestDistortionAudioProcessorEditor (TestDist
     lowCutSlider.labels.add({ 1.f, "20kHz" });
     highCutSlider.labels.add({ 0.f, "20Hz" });
     highCutSlider.labels.add({ 1.f, "20kHz" });
-    gainInSlider.labels.add({ 0.f, "0dB" });
-    gainInSlider.labels.add({ 1.f, "+50dB" });
-    gainOutSlider.labels.add({ 0.f, "-50dB" });
-    gainOutSlider.labels.add({ 1.f, "0dB" });
+    gainInSlider.labels.add({ 0.f, "-25dB" });
+    gainInSlider.labels.add({ 1.f, "+25dB" });
+    gainOutSlider.labels.add({ 0.f, "-25dB" });
+    gainOutSlider.labels.add({ 1.f, "+25dB" });
 
     for (auto* comp : getComps())
     {

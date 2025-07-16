@@ -283,9 +283,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout TestDistortionAudioProcessor
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("HighCut Freq", "HighCut Freq", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f), 20000.f));
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>("Input Gain", "Input Gain", juce::NormalisableRange<float>(0.0f, 50.0f, 0.5f, 1.f), 25.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("Input Gain", "Input Gain", juce::NormalisableRange<float>(-25.0f, 25.0f, 0.5f, 1.f), 0.0f));
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>("Output Gain", "Output Gain", juce::NormalisableRange<float>(-50.0f, 0.0f, 0.5f, 1.f), -25.0f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>("Output Gain", "Output Gain", juce::NormalisableRange<float>(-25.0f, 25.0f, 0.5f, 1.f), 0.0f));
 
     juce::StringArray stringArray;
     stringArray.add("ArcTan");
