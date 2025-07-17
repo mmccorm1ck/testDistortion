@@ -224,6 +224,10 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
     settings.outGain = apvts.getRawParameterValue("Output Gain")->load();
     settings.distType = static_cast<DistTypes>(apvts.getRawParameterValue("Distortion Type")->load());
 
+    settings.lowCutBypassed = apvts.getRawParameterValue("LowCut Bypassed")->load() > 0.5f;
+    settings.highCutBypassed = apvts.getRawParameterValue("HighCut Bypassed")->load() > 0.5f;
+    settings.distortionBypassed = apvts.getRawParameterValue("Distortion Bypassed")->load() > 0.5f;
+
     return settings;
 }
 
@@ -237,6 +241,10 @@ void TestDistortionAudioProcessor::updateLowCut(const ChainSettings& chainSettin
     auto lowCutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowFreq, getSampleRate(), 1);
     auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
     auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
+
+    leftChain.setBypassed<ChainPositions::LowCut>(chainSettings.lowCutBypassed);
+    rightChain.setBypassed<ChainPositions::LowCut>(chainSettings.lowCutBypassed);
+
     updateCoefficients(leftLowCut.get<0>().coefficients, lowCutCoefficients[0]);
     updateCoefficients(rightLowCut.get<0>().coefficients, lowCutCoefficients[0]);
 }
@@ -246,12 +254,21 @@ void TestDistortionAudioProcessor::updateHighCut(const ChainSettings& chainSetti
     auto highCutCoefficients = juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(chainSettings.highFreq, getSampleRate(), 1);
     auto& leftHighCut = leftChain.get<ChainPositions::HighCut>();
     auto& rightHighCut = rightChain.get<ChainPositions::HighCut>();
+
+    leftChain.setBypassed<ChainPositions::HighCut>(chainSettings.highCutBypassed);
+    rightChain.setBypassed<ChainPositions::HighCut>(chainSettings.highCutBypassed);
+
     updateCoefficients(leftHighCut.get<0>().coefficients, highCutCoefficients[0]);
     updateCoefficients(rightHighCut.get<0>().coefficients, highCutCoefficients[0]);
 }
 
 void TestDistortionAudioProcessor::updateGain(const ChainSettings& chainSettings)
 {
+    leftChain.setBypassed<ChainPositions::GainIn>(chainSettings.distortionBypassed);
+    rightChain.setBypassed<ChainPositions::GainIn>(chainSettings.distortionBypassed);
+    leftChain.setBypassed<ChainPositions::GainOut>(chainSettings.distortionBypassed);
+    rightChain.setBypassed<ChainPositions::GainOut>(chainSettings.distortionBypassed);
+
     leftChain.get<ChainPositions::GainIn>().setGainDecibels(chainSettings.inGain);
     rightChain.get<ChainPositions::GainIn>().setGainDecibels(chainSettings.inGain);
     leftChain.get<ChainPositions::GainOut>().setGainDecibels(chainSettings.outGain);
@@ -262,6 +279,10 @@ void TestDistortionAudioProcessor::updateWaveShaper(const ChainSettings& chainSe
 {
     auto& waveshapeLeft = leftChain.get<ChainPositions::WaveShape>();
     auto& waveshapeRight = rightChain.get<ChainPositions::WaveShape>();
+
+    leftChain.setBypassed<ChainPositions::WaveShape>(chainSettings.distortionBypassed);
+    rightChain.setBypassed<ChainPositions::WaveShape>(chainSettings.distortionBypassed);
+
     updateWaveShape(waveshapeLeft, chainSettings.distType);
     updateWaveShape(waveshapeRight, chainSettings.distType);
 }
@@ -296,6 +317,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout TestDistortionAudioProcessor
     stringArray.add("Hard");
 
     layout.add(std::make_unique<juce::AudioParameterChoice>("Distortion Type", "Distortion Type", stringArray, 0));
+
+    layout.add(std::make_unique<juce::AudioParameterBool>("LowCut Bypassed", "LowCut Bypassed", false));
+    layout.add(std::make_unique<juce::AudioParameterBool>("HighCut Bypassed", "HighCut Bypassed", false));
+    layout.add(std::make_unique<juce::AudioParameterBool>("Distortion Bypassed", "Distortion Bypassed", false));
 
     return layout;
 }

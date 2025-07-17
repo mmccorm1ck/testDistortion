@@ -145,6 +145,8 @@ struct ChainSettings
     float inGain{ 0 };
     float outGain{ 0 };
     DistTypes distType { DistTypes::ArcTan };
+
+    bool lowCutBypassed{ false }, highCutBypassed{ false }, distortionBypassed{ false };
 };
 
 struct FifoBlock
