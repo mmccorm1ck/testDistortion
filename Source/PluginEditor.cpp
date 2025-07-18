@@ -407,10 +407,14 @@ void TestDistortionAudioProcessorEditor::resized()
     auto outputArea = bounds.removeFromRight(bounds.getWidth() * 0.5);
 
     transferGraphComponent.setBounds(graphArea);
-    gainInSlider.setBounds(inputArea.removeFromTop(inputArea.getHeight() * 0.5));
-    gainOutSlider.setBounds(outputArea.removeFromTop(outputArea.getHeight() * 0.5));
-    lowCutSlider.setBounds(inputArea);
-    highCutSlider.setBounds(outputArea);
+    float sliderHeight = inputArea.getHeight() * 0.45;
+    gainInSlider.setBounds(inputArea.removeFromTop(sliderHeight));
+    gainOutSlider.setBounds(outputArea.removeFromTop(sliderHeight));
+    lowCutSlider.setBounds(inputArea.removeFromBottom(sliderHeight));
+    highCutSlider.setBounds(outputArea.removeFromBottom(sliderHeight));
+    lowCutBypassButton.setBounds(inputArea);
+    highCutBypassButton.setBounds(outputArea);
+    distortionBypassButton.setBounds(bounds.removeFromTop(inputArea.getHeight()));
     waveshapeFunctionSlider.setBounds(bounds);
 }
 
@@ -423,7 +427,10 @@ std::vector<juce::Component*> TestDistortionAudioProcessorEditor::getComps()
         &gainInSlider,
         &gainOutSlider,
         &waveshapeFunctionSlider,
-        &transferGraphComponent
+        &transferGraphComponent,
+        &lowCutBypassButton,
+        &highCutBypassButton,
+        &distortionBypassButton
     };
 }
 
