@@ -116,6 +116,11 @@ private:
 
     juce::ToggleButton lowCutBypassButton, highCutBypassButton, distortionBypassButton;
 
+    using ButtonAttachment = APVTS::ButtonAttachment;
+    ButtonAttachment lowCutBypassButtonAttachment,
+        highCutBypassButtonAttachment,
+        distortionBypassButtonAttachment;
+
     std::vector<juce::Component*> getComps();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TestDistortionAudioProcessorEditor)

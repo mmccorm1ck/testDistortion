@@ -363,7 +363,10 @@ TestDistortionAudioProcessorEditor::TestDistortionAudioProcessorEditor (TestDist
     highCutSliderAttachment(audioProcessor.apvts, "HighCut Freq", highCutSlider),
     gainInSliderAttachment(audioProcessor.apvts, "Input Gain", gainInSlider),
     gainOutSliderAttachment(audioProcessor.apvts, "Output Gain", gainOutSlider),
-    waveshapeFunctionSliderAttachment(audioProcessor.apvts, "Distortion Type", waveshapeFunctionSlider)
+    waveshapeFunctionSliderAttachment(audioProcessor.apvts, "Distortion Type", waveshapeFunctionSlider),
+    lowCutBypassButtonAttachment(audioProcessor.apvts, "LowCut Bypassed", lowCutBypassButton),
+    highCutBypassButtonAttachment(audioProcessor.apvts, "HighCut Bypassed", highCutBypassButton),
+    distortionBypassButtonAttachment(audioProcessor.apvts, "Distortion Bypassed", distortionBypassButton)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
