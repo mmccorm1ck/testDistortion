@@ -302,12 +302,22 @@ void TransferGraphComponent::paint(juce::Graphics& g)
     int magX = jmap(static_cast<double>(dampedMagnitude), 0.0, 2.0, 0.0, inputMax);
     int magY = map(static_cast<double>(wsFunc(dampedMagnitude)));
 
+    bool distBypassed = audioProcessor.apvts.getRawParameterValue("Distortion Bypassed")->load() > 0.5f;
+
     g.setColour(Colours::lightblue);
-    g.drawHorizontalLine(magY, 0.0, magX);
-    g.drawVerticalLine(magX, magY, outputMin);
+    if (distBypassed)
+    {
+        g.drawVerticalLine(magX, outputMax, outputMin);
+    }
+    else
+    {
+        g.drawHorizontalLine(magY, 0.0, magX);
+        g.drawVerticalLine(magX, magY, outputMin);
+    }
     g.setColour(Colours::blue);
     g.drawRoundedRectangle(graphArea.toFloat(), 4.f, 1.f);
-    g.setColour(Colours::white);
+    if (distBypassed) g.setColour(Colours::grey);
+    else g.setColour(Colours::white);
     g.strokePath(functionPath, PathStrokeType(2.f));
 }
 
