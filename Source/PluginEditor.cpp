@@ -91,7 +91,7 @@ void RotarySliderWithLabels::paint(juce::Graphics& g)
         auto ang = jmap(pos, 0.f, 1.f, startAng, endAng);
         auto drawPoint = centre.getPointOnCircumference(radius + getTextHeight(), ang);
         Rectangle<float> r;
-        auto str = labels[i].label;
+        juce::String str = labels[i].label;
         r.setSize(g.getCurrentFont().getStringWidth(str), getTextHeight());
         r.setCentre(drawPoint);
         r.setY(r.getY() + getTextHeight() * 0.5f);
@@ -218,10 +218,19 @@ void TransferGraphComponent::timerCallback()
 
     if (parametersChanged.compareAndSetBool(false, true))
     {
-        auto chainSettings = getChainSettings(audioProcessor.apvts);
+        updateChain();
     }
 
     repaint();
+}
+
+void TransferGraphComponent::updateChain()
+{
+    auto chainSettings = getChainSettings(audioProcessor.apvts);
+
+    monoChain.setBypassed<ChainPositions::LowCut>(chainSettings.lowCutBypassed);
+    monoChain.setBypassed<ChainPositions::HighCut>(chainSettings.highCutBypassed);
+    monoChain.setBypassed<ChainPositions::WaveShape>(chainSettings.distortionBypassed);
 }
 
 void TransferGraphComponent::paint(juce::Graphics& g)
@@ -302,7 +311,7 @@ void TransferGraphComponent::paint(juce::Graphics& g)
     int magX = jmap(static_cast<double>(dampedMagnitude), 0.0, 2.0, 0.0, inputMax);
     int magY = map(static_cast<double>(wsFunc(dampedMagnitude)));
 
-    bool distBypassed = audioProcessor.apvts.getRawParameterValue("Distortion Bypassed")->load() > 0.5f;
+    bool distBypassed = monoChain.isBypassed<ChainPositions::WaveShape>();
 
     g.setColour(Colours::lightblue);
     if (distBypassed)

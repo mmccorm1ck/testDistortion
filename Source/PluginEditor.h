@@ -28,6 +28,7 @@ struct TransferGraphComponent : juce::Component, juce::AudioProcessorParameter::
     void timerCallback() override;
     void paint(juce::Graphics& g) override;
     void resized() override;
+    void updateChain();
 private:
     TestDistortionAudioProcessor& audioProcessor;
     juce::Atomic<bool> parametersChanged{ false };
