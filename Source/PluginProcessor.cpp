@@ -264,11 +264,6 @@ void TestDistortionAudioProcessor::updateHighCut(const ChainSettings& chainSetti
 
 void TestDistortionAudioProcessor::updateGain(const ChainSettings& chainSettings)
 {
-    leftChain.setBypassed<ChainPositions::GainIn>(chainSettings.distortionBypassed);
-    rightChain.setBypassed<ChainPositions::GainIn>(chainSettings.distortionBypassed);
-    leftChain.setBypassed<ChainPositions::GainOut>(chainSettings.distortionBypassed);
-    rightChain.setBypassed<ChainPositions::GainOut>(chainSettings.distortionBypassed);
-
     leftChain.get<ChainPositions::GainIn>().setGainDecibels(chainSettings.inGain);
     rightChain.get<ChainPositions::GainIn>().setGainDecibels(chainSettings.inGain);
     leftChain.get<ChainPositions::GainOut>().setGainDecibels(chainSettings.outGain);
