@@ -240,6 +240,8 @@ void TransferGraphComponent::paint(juce::Graphics& g)
 
     auto graphArea = getLocalBounds();
 
+    double aspectRatio = static_cast<double>(getWidth()) / getHeight();
+
     g.drawImage(background, getLocalBounds().toFloat());
 
     auto w = graphArea.getWidth();
@@ -289,7 +291,7 @@ void TransferGraphComponent::paint(juce::Graphics& g)
     mags.resize(w);
 
     for (int i = 0; i < w; ++i) {
-        float input = 2 * static_cast<float>(i) / w;
+        float input = aspectRatio * static_cast<float>(i) / w;
         mags[i] = wsFunc(input);
     }
 
@@ -308,7 +310,7 @@ void TransferGraphComponent::paint(juce::Graphics& g)
         functionPath.lineTo(graphArea.getX() + i, map(mags[i]));
     }
 
-    int magX = jmap(static_cast<double>(dampedMagnitude), 0.0, 2.0, 0.0, inputMax);
+    int magX = jmap(static_cast<double>(dampedMagnitude), 0.0, aspectRatio, 0.0, inputMax);
     int magY = map(static_cast<double>(wsFunc(dampedMagnitude)));
 
     bool distBypassed = monoChain.isBypassed<ChainPositions::WaveShape>();
@@ -336,11 +338,18 @@ void TransferGraphComponent::resized()
     background = Image(Image::PixelFormat::RGB, getWidth(), getHeight(), true);
     Graphics g(background);
 
-    Array<float> xAxis
+    float aspectRatio = static_cast<float>(getWidth()) / getHeight();
+
+    Array<float> xAxis;
+    for (int i = 0; i < aspectRatio; i++)
     {
-        0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1,
-        1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9
-    };
+        for (int j = 1; j <= 10; j++)
+        {
+            float temp = i + static_cast<float>(j) / 10;
+            if (temp >= aspectRatio) break;
+            xAxis.add(temp);
+        }
+    }
     g.setColour(Colours::grey);
     float dashPattern[2];
     dashPattern[0] = 5.f;
@@ -348,10 +357,10 @@ void TransferGraphComponent::resized()
     Line<float> l;
     for (auto a : xAxis)
     {
-        auto x = jmap(a, 0.f, 2.f, 0.f, float(getWidth()));
+        auto x = jmap(a, 0.f, aspectRatio, 0.f, float(getWidth()));
         l.setStart(x, 0.f);
         l.setEnd(x, getHeight());
-        if (a == 1.f)
+        if (fmod(a,1) == 0.f)
             g.drawDashedLine(l, dashPattern, 2, 2.f);
         else
             g.drawDashedLine(l, dashPattern, 2, 1.f);
@@ -404,7 +413,7 @@ TestDistortionAudioProcessorEditor::TestDistortionAudioProcessorEditor (TestDist
         addAndMakeVisible(comp);
     }
 
-    setSize (600, 500);
+    setSize (600, 400);
 }
 
 TestDistortionAudioProcessorEditor::~TestDistortionAudioProcessorEditor()
@@ -424,7 +433,8 @@ void TestDistortionAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     auto bounds = getLocalBounds();
-    auto graphArea = bounds.removeFromTop(bounds.getHeight() * 0.6);
+    int controlAreaHeigh = bounds.getWidth() / 3;
+    auto graphArea = bounds.removeFromTop(bounds.getHeight() - controlAreaHeigh);
     auto inputArea = bounds.removeFromLeft(bounds.getWidth() * 0.33);
     auto outputArea = bounds.removeFromRight(bounds.getWidth() * 0.5);
 
