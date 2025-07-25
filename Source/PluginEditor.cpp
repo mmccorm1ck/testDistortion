@@ -452,6 +452,32 @@ TestDistortionAudioProcessorEditor::TestDistortionAudioProcessorEditor (TestDist
     highCutBypassButton.setLookAndFeel(&lnf);
     distortionBypassButton.setLookAndFeel(&lnf);
 
+    auto safePtr = juce::Component::SafePointer<TestDistortionAudioProcessorEditor>(this);
+    lowCutBypassButton.onClick = [safePtr]()
+        {
+            if (auto* comp = safePtr.getComponent())
+            {
+                auto bypassed = comp->lowCutBypassButton.getToggleState();
+                comp->lowCutSlider.setEnabled(!bypassed);
+            }
+        };
+    highCutBypassButton.onClick = [safePtr]()
+        {
+            if (auto* comp = safePtr.getComponent())
+            {
+                auto bypassed = comp->highCutBypassButton.getToggleState();
+                comp->highCutSlider.setEnabled(!bypassed);
+            }
+        };
+    distortionBypassButton.onClick = [safePtr]()
+        {
+            if (auto* comp = safePtr.getComponent())
+            {
+                auto bypassed = comp->distortionBypassButton.getToggleState();
+                comp->waveshapeFunctionSlider.setEnabled(!bypassed);
+            }
+        };
+
     setSize (600, 400);
 }
 
