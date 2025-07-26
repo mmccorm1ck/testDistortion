@@ -20,9 +20,11 @@ void LookAndFeel::drawRotarySlider(juce::Graphics& g,
 
     auto bounds = Rectangle<float>(x, y, width, height);
 
-    g.setColour(Colours::grey);
+    auto enabled = slider.isEnabled();
+
+    g.setColour(enabled ? Colours::lightblue : Colours::lightgrey);
     g.fillEllipse(bounds);
-    g.setColour(Colours::blue);
+    g.setColour(enabled ? Colours::blue : Colours::grey);
     g.drawEllipse(bounds, 1.f);
 
     if (auto* rswl = dynamic_cast<RotarySliderWithLabels*>(&slider))
